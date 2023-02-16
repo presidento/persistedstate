@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="persistedstate",
-    version="22.01",
+    version="22.03",
     scripts=[],
     author="Máté Farkas",
     author_email="fm@farkas-mate.hu",
@@ -12,7 +12,7 @@ setuptools.setup(
     packages=["persistedstate"],
     package_data={"persistedstate": ["py.typed"]},
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "Intended Audience :: System Administrators",
         "License :: OSI Approved :: MIT License",
