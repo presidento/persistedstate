@@ -1,0 +1,6 @@
+__pycache__
+.venv
+/tmp/
+/build/
+/dist/
+/persistedstate.egg-info/
