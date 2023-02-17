@@ -44,8 +44,8 @@ class PersistedState(MutableMapping):
                 logger.debug(f"Loaded: '{key}'")
             self.__cache[key.strip()] = json.loads(value_str)
 
-    def __vacuum(self) -> None:
-        if logger.isEnabledFor(logging.DEBUG):
+    def __vacuum(self, do_logging=True):
+        if logger.isEnabledFor(logging.DEBUG) and do_logging:
             logger.debug("Vacuuming")
         tmp_file = self.__filepath.with_suffix(self.__filepath.suffix + ".tmp")
         with tmp_file.open("w", encoding="utf-8") as out_file:
@@ -77,7 +77,8 @@ class PersistedState(MutableMapping):
 
     def __del__(self):
         if not self.__file.closed:
-            self.__vacuum()
+            # Assume globals are gone by now (do not log!)
+            self.__vacuum(do_logging=False)
             self.__file.close()
 
     def __enter__(self):
