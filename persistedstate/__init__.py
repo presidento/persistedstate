@@ -6,7 +6,7 @@ import re
 from collections.abc import MutableMapping
 from typing import Any, Dict
 
-VALID_IDENTIFIER_RE = re.compile(r"^[\w_. \-\/]+$")
+VALID_IDENTIFIER_RE = re.compile(r"^[\w_.\-\/]+$")
 
 logger = logging.getLogger(__name__)
 
