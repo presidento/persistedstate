@@ -23,7 +23,7 @@ class BaseTest:
         self.do_the_count()
         end = time.perf_counter()
         test_name = self.__class__.__name__.replace("Test", "")
-        print(f"{test_name}: {end-start:.3f} sec")
+        print(f"{test_name:<15s} {end-start:6.3f} sec")
 
 
 class PersistedStateTest(BaseTest):
