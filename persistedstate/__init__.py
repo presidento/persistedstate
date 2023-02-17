@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import pathlib
 import re
@@ -6,6 +7,8 @@ from collections.abc import MutableMapping
 from typing import Any, Dict
 
 VALID_IDENTIFIER_RE = re.compile(r"^[\w_.-]+$")
+
+logger = logging.getLogger(__name__)
 
 
 class PersistedState(MutableMapping):
@@ -21,16 +24,29 @@ class PersistedState(MutableMapping):
         if defaults:
             for key, value in defaults.items():
                 if not hasattr(self, key):
+                    if logger.isEnabledFor(logging.DEBUG):
+                        logger.debug(f"Default value set for '{key}'")
                     setattr(self, key, value)
+                else:
+                    if logger.isEnabledFor(logging.DEBUG):
+                        logger.debug(f"Default vale IS NOT set for '{key}'")
 
     def __load(self) -> None:
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug(
+                f"File size on load: {self.__filepath.stat().st_size // 1024} kb"
+            )
         for line in self.__file:
             key, _, value_str = line.partition(":")
             if key.startswith('"'):
                 key = json.loads(key)
+            if logger.isEnabledFor(logging.DEBUG):
+                logger.debug(f"Loaded: '{key}'")
             self.__cache[key.strip()] = json.loads(value_str)
 
     def __vacuum(self) -> None:
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug("Vacuuming")
         tmp_file = self.__filepath.with_suffix(self.__filepath.suffix + ".tmp")
         with tmp_file.open("w", encoding="utf-8") as out_file:
             for key in sorted(self.keys()):
