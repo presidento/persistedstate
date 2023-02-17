@@ -54,7 +54,7 @@ class PersistedState(MutableMapping):
             ) from None
 
     def __setattr__(self, __name: str, __value: Any) -> None:
-        if __name.startswith("_") or hasattr(self, __name):
+        if __name.startswith("_"):
             object.__setattr__(self, __name, __value)
             return
         self[__name] = __value
