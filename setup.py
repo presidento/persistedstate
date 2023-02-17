@@ -7,7 +7,7 @@ setuptools.setup(
     scripts=[],
     author="Máté Farkas",
     author_email="fm@farkas-mate.hu",
-    description="Persist state in editable text file",
+    description="Ultra fast persistent store for small states in editable text file",
     long_description=pathlib.Path("README.md").read_text(encoding="utf-8"),
     long_description_content_type="text/markdown",
     url="https://github.com/presidento/persistedstate",
