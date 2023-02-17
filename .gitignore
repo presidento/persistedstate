@@ -1,5 +1,5 @@
 __pycache__
-.venv
+.3.*.venv
 /tmp/
 /build/
 /dist/
