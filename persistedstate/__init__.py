@@ -3,7 +3,7 @@ import os
 import pathlib
 import re
 from collections.abc import MutableMapping
-from typing import Any
+from typing import Any, Dict
 
 VALID_IDENTIFIER_RE = re.compile(r"^[\w_.-]+$")
 
@@ -16,7 +16,7 @@ class PersistedState(MutableMapping):
         self.__filepath = pathlib.Path(_filepath)
         self.__filepath.touch()
         self.__file = self.__filepath.open("r+", encoding="utf-8")
-        self.__cache = {}
+        self.__cache: Dict[str, Any] = {}
         self.__load()
         if defaults:
             for key, value in defaults.items():

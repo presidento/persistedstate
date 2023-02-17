@@ -18,7 +18,7 @@ bootstrap-with VERSION:
 # Check static typing
 mypy:
     just clean
-    & ".{{ DEFAULT_VERSION }}.venv\Scripts\mypy.exe" .
+    & ".{{ DEFAULT_VERSION }}.venv\Scripts\mypy.exe" persistedstate
 
 # Test with all supported Python versions
 test: mypy
