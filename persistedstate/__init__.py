@@ -60,8 +60,9 @@ class PersistedState(MutableMapping):
         self[__name] = __value
 
     def __del__(self):
-        self.__vacuum()
-        self.__file.close()
+        if not self.__file.closed:
+            self.__vacuum()
+            self.__file.close()
 
     def __enter__(self):
         return self
@@ -69,6 +70,7 @@ class PersistedState(MutableMapping):
     def __exit__(self, exc_type, exc_value, traceback):
         if exc_type is None:
             self.__vacuum()
+        self.__file.close()
 
     def __getitem__(self, key):
         return self.__cache[key]
