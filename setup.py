@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="persistedstate",
-    version="22.03",
+    version="22.04",
     scripts=[],
     author="Máté Farkas",
     author_email="fm@farkas-mate.hu",
