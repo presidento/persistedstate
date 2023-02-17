@@ -16,7 +16,7 @@ class TestAttributes(unittest.TestCase):
         assert state.num == 42
         assert state.string == "Hello"
 
-    def test_persistance(self):
+    def test_persisted_attributes_instead_of_default_value(self):
         self.filepath.write_text(
             textwrap.dedent(
                 """
@@ -29,10 +29,28 @@ class TestAttributes(unittest.TestCase):
         assert state.num == 55
         assert state.string == "Ahoi"
 
-    def test_new_attribute(self):
-        with PersistedState(self.filepath) as state:
+    def test_persisting_attributes(self):
+        with PersistedState(self.filepath, string="Hello") as state:
             state.bool = True
-        assert "bool: true" == self.filepath.read_text().strip()
+            state.string = "Ahoi"
+        with PersistedState(self.filepath) as state:
+            assert state.bool
+            assert state.string == "Ahoi"
+        expected_state = textwrap.dedent(
+            """
+            bool: true
+            string: "Ahoi"
+            """
+        ).strip()
+        assert expected_state == self.filepath.read_text().strip()
+
+    def test_dict_interface(self):
+        with PersistedState(self.filepath) as state:
+            for i in range(10):
+                state[f"Item #{i}"] = i
+        with PersistedState(self.filepath) as state:
+            for i in range(10):
+                assert state[f"Item #{i}"] == i
 
 
 if __name__ == "__main__":
