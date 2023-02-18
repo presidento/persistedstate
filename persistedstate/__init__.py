@@ -2,11 +2,9 @@ import json
 import logging
 import os
 import pathlib
-import re
+import yaml
 from collections.abc import MutableMapping
 from typing import Any, Dict
-
-VALID_IDENTIFIER_RE = re.compile(r"^[\w_.\-\/]+$")
 
 logger = logging.getLogger(__name__)
 
@@ -36,30 +34,26 @@ class PersistedState(MutableMapping):
             logger.debug(
                 f"File size on load: {self.__filepath.stat().st_size // 1024} kb"
             )
-        for line in self.__file:
-            key, _, value_str = line.partition(":")
-            if key.startswith('"'):
-                key = json.loads(key)
-            if logger.isEnabledFor(logging.DEBUG):
-                logger.debug(f"Loaded: '{key}'")
-            self.__cache[key.strip()] = json.loads(value_str)
+        yaml_stream = yaml.safe_load_all(self.__file)
+        try:
+            self.__cache.update(next(yaml_stream))
+        except StopIteration:
+            return
+        for update in yaml_stream:
+            self.__cache.update(update)
 
     def __vacuum(self, do_logging=True):
         if logger.isEnabledFor(logging.DEBUG) and do_logging:
             logger.debug("Vacuuming")
         tmp_file = self.__filepath.with_suffix(self.__filepath.suffix + ".tmp")
         with tmp_file.open("w", encoding="utf-8") as out_file:
-            for key in sorted(self.keys()):
-                self.__write_line(out_file, key)
+            yaml.safe_dump(self.__cache, out_file)
         self.__file.close()
         tmp_file.replace(self.__filepath)
         self.__file = self.__filepath.open("a", encoding="utf-8")
 
     def __write_line(self, file, key):
-        key_str = key
-        if not VALID_IDENTIFIER_RE.match(key_str):
-            key_str = json.dumps(key_str).replace(":", "\\u003A")
-        file.write(f"{key_str}: {json.dumps(self[key])}\n")
+        file.write("\n---\n" + json.dumps({key: self[key]}))
 
     def __getattr__(self, __name):
         try:

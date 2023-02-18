@@ -28,4 +28,5 @@ setuptools.setup(
         "Topic :: Utilities",
         "Typing :: Typed",
     ],
+    install_requires=["pyyaml"],
 )
