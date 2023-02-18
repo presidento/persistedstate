@@ -16,10 +16,11 @@ print("Processing DONE.")
 
 You can interrupt this script, and next time it will continue from the first unprocessed item.
 
-## Editable state file
+## YAML state file
 
 The use case is persisting small amount of data which can be edited easily with a text editor.
-The database is an UTF-8 encoded text file, using a subset of YAML, so it can be highlighted.
+The database is an UTF-8 encoded YAML file, so it can be highlighted and edited manually if needed.
+(It also uses YAML stream file format for journal.)
 
 ## Failure tolerance
 
@@ -36,15 +37,15 @@ for _ in range(COUNT_TO):
     state.counter += 1
 ```
 
-Counting to 10,000:
+Counting to 10,000 (using Windows and Python 3.11):
 
 ```
-PersistedState   0.062 sec
-DiskCache        1.331 sec
-SqliteDict       4.298 sec
-Shelve           4.492 sec
-PickleDb        10.728 sec
-Lmdb            16.980 sec
+PersistedState   0.193 sec
+DiskCache        1.222 sec
+SqliteDict       3.089 sec
+PickleDb         8.251 sec
+Lmdb            14.944 sec
+Shelve          39.771 sec
 ```
 
 The example seems to be silly, but this is very close to the use case it was developed for. For complex data structures or big amount of data I suggest using other libraries, like [DiskCache](https://grantjenks.com/docs/diskcache/). (The rule of thumb is when your state file is too big to be edited easily in your favorite text editor, you may think about using another key-value store library.)
