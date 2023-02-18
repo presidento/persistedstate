@@ -31,7 +31,12 @@ class YamlDict(MutableMapping):
         except StopIteration:
             return
         for update in yaml_stream:
-            self.__cache.update(update)
+            if update[0] == "set":
+                self.__cache[update[1]] = update[2]
+            elif update[0] == "delete":
+                del self.__cache[update[1]]
+            else:
+                raise RuntimeError("Unknow update step during recovery: " + update[0])
 
     def __vacuum(self, do_logging=True):
         if logger.isEnabledFor(logging.DEBUG) and do_logging:
@@ -43,8 +48,9 @@ class YamlDict(MutableMapping):
         tmp_file.replace(self.__filepath)
         self.__file = self.__filepath.open("a", encoding="utf-8")
 
-    def __write_line(self, file, key):
-        file.write("\n---\n" + json.dumps({key: self[key]}, ensure_ascii=False))
+    def __write_change(self, *args):
+        self.__file.write("\n---\n" + json.dumps([*args], ensure_ascii=False))
+        self.__file.flush()
 
     def __del__(self):
         if not self.__file.closed:
@@ -65,13 +71,14 @@ class YamlDict(MutableMapping):
 
     def __setitem__(self, key, value):
         self.__cache[key] = value
-        self.__write_line(self.__file, key)
+        self.__write_change("set", key, value)
         self.__change_count += 1
         if self.__change_count >= self._VACUUM_ON_CHANGE:
             self.__vacuum()
             self.__change_count = 0
 
     def __delitem__(self, key):
+        self.__write_change("delete", key)
         del self.__cache[key]
 
     def __iter__(self):
