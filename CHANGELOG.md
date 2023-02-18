@@ -1,3 +1,7 @@
+# 23.3
+
+- Use YAML file format, not just a subset of YAML
+
 # 23.2
 
 - Add long description to setup.py
