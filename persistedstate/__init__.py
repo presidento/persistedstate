@@ -9,25 +9,16 @@ from typing import Any, Dict
 logger = logging.getLogger(__name__)
 
 
-class PersistedState(MutableMapping):
+class YamlDict(MutableMapping):
     _VACUUM_ON_CHANGE = 2000
 
-    def __init__(self, _filepath: os.PathLike, **defaults):
+    def __init__(self, _filepath: os.PathLike):
         self.__change_count = 0
         self.__filepath = pathlib.Path(_filepath)
         self.__filepath.touch()
         self.__file = self.__filepath.open("r+", encoding="utf-8")
         self.__cache: Dict[str, Any] = {}
         self.__load()
-        if defaults:
-            for key, value in defaults.items():
-                if not hasattr(self, key):
-                    if logger.isEnabledFor(logging.DEBUG):
-                        logger.debug(f"Default value set for '{key}'")
-                    setattr(self, key, value)
-                else:
-                    if logger.isEnabledFor(logging.DEBUG):
-                        logger.debug(f"Default vale IS NOT set for '{key}'")
 
     def __load(self) -> None:
         if logger.isEnabledFor(logging.DEBUG):
@@ -54,20 +45,6 @@ class PersistedState(MutableMapping):
 
     def __write_line(self, file, key):
         file.write("\n---\n" + json.dumps({key: self[key]}))
-
-    def __getattr__(self, __name):
-        try:
-            return self[__name]
-        except KeyError:
-            raise AttributeError(
-                f"{self.__class__} object has no attribute '{__name}'"
-            ) from None
-
-    def __setattr__(self, __name: str, __value: Any) -> None:
-        if __name.startswith("_"):
-            object.__setattr__(self, __name, __value)
-            return
-        self[__name] = __value
 
     def __del__(self):
         if not self.__file.closed:
@@ -102,3 +79,24 @@ class PersistedState(MutableMapping):
 
     def __len__(self):
         return len(self.__cache)
+
+
+class PersistedState(YamlDict):
+    def __init__(self, _filepath: os.PathLike, **defaults):
+        super().__init__(_filepath)
+        for key, value in defaults.items():
+            self.setdefault(key, value)
+
+    def __getattr__(self, __name):
+        try:
+            return self[__name]
+        except KeyError:
+            raise AttributeError(
+                f"{self.__class__} object has no attribute '{__name}'"
+            ) from None
+
+    def __setattr__(self, __name: str, __value: Any) -> None:
+        if __name.startswith("_"):
+            object.__setattr__(self, __name, __value)
+            return
+        self[__name] = __value

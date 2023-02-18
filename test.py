@@ -43,7 +43,7 @@ class TestAttributes(unittest.TestCase):
         expected_state = textwrap.dedent(
             """
             bool: true
-            string: "Ahoi"
+            string: Ahoi
             """
         ).strip()
         assert expected_state == self.filepath.read_text().strip()
