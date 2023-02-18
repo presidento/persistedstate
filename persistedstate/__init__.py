@@ -38,13 +38,13 @@ class YamlDict(MutableMapping):
             logger.debug("Vacuuming")
         tmp_file = self.__filepath.with_suffix(self.__filepath.suffix + ".tmp")
         with tmp_file.open("w", encoding="utf-8") as out_file:
-            yaml.safe_dump(self.__cache, out_file)
+            yaml.safe_dump(self.__cache, out_file, allow_unicode=True, sort_keys=True)
         self.__file.close()
         tmp_file.replace(self.__filepath)
         self.__file = self.__filepath.open("a", encoding="utf-8")
 
     def __write_line(self, file, key):
-        file.write("\n---\n" + json.dumps({key: self[key]}))
+        file.write("\n---\n" + json.dumps({key: self[key]}, ensure_ascii=False))
 
     def __del__(self):
         if not self.__file.closed:
