@@ -7,13 +7,13 @@ set shell := ["powershell", "-nop", "-c"]
 bootstrap:
     New-Item "tmp" -ItemType Directory -Force | Out-Null
     @foreach ($version in ('{{ SUPPORTED_VERSIONS }}' -split '\s+')) { just bootstrap-with "$version" }
-    & ".{{ DEFAULT_VERSION }}.venv\Scripts\python.exe" -m pip install mypy setuptools wheel twine pip-tools --quiet --upgrade
+    & ".{{ DEFAULT_VERSION }}.venv\Scripts\python.exe" -m pip install mypy setuptools twine pip-tools --quiet --upgrade
     & ".{{ DEFAULT_VERSION }}.venv\Scripts\python.exe" -m pip install -r requirements-perf.txt
 
 # Set up Python environment with specified Python version
 bootstrap-with VERSION:
     If (-not (Test-Path .{{ VERSION }}.venv)) { py -{{ VERSION }} -m venv .{{ VERSION }}.venv }
-    & ".{{ VERSION }}.venv\Scripts\python.exe" -m pip install --upgrade pip
+    & ".{{ VERSION }}.venv\Scripts\python.exe" -m pip install --upgrade pip wheel
     & ".{{ VERSION }}.venv\Scripts\python.exe" -m pip install . --upgrade --upgrade-strategy eager
 
 # Check static typing
