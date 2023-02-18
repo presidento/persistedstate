@@ -25,28 +25,26 @@ class YamlDict(MutableMapping):
             logger.debug(
                 f"File size on load: {self.__filepath.stat().st_size // 1024} kb"
             )
-        yaml_stream = yaml.safe_load_all(self.__file)
-        try:
-            self.__cache.update(next(yaml_stream))
-        except StopIteration:
-            return
-        for update in yaml_stream:
-            if update[0] == "set":
+        for update in yaml.safe_load_all(self.__file):
+            if type(update) == dict:
+                self.__cache = update
+            elif update[0] == "set":
                 self.__cache[update[1]] = update[2]
             elif update[0] == "delete":
                 del self.__cache[update[1]]
             else:
-                raise RuntimeError("Unknow update step during recovery: " + update[0])
+                raise RuntimeError("Unknow update step during recovery: " + update)
 
     def __vacuum(self, do_logging=True):
         if logger.isEnabledFor(logging.DEBUG) and do_logging:
             logger.debug("Vacuuming")
-        tmp_file = self.__filepath.with_suffix(self.__filepath.suffix + ".tmp")
-        with tmp_file.open("w", encoding="utf-8") as out_file:
-            yaml.safe_dump(self.__cache, out_file, allow_unicode=True, sort_keys=True)
-        self.__file.close()
-        tmp_file.replace(self.__filepath)
-        self.__file = self.__filepath.open("a", encoding="utf-8")
+        yaml_str = yaml.safe_dump(self.__cache, allow_unicode=True, sort_keys=True)
+        # If something goes wrong, have the last valid state at the end
+        self.__file.write(yaml_str)
+        self.__file.seek(0)
+        self.__file.write(yaml_str)
+        self.__file.flush()
+        self.__file.truncate()
 
     def __write_change(self, *args):
         self.__file.write("\n---\n" + json.dumps([*args], ensure_ascii=False))
