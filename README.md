@@ -15,6 +15,7 @@ print("Processing DONE.")
 ```
 
 You can interrupt this script, and next time it will continue from the first unprocessed item.
+As another example see [perftest.py](perftest.py).
 
 ## YAML state file
 
@@ -29,7 +30,7 @@ It uses Write-Ahead-Logging and atomic vacuum, so there will be no data loss.
 ## Performance
 
 For its use case it outperforms existing key-value store modules.
-For example incrementing a counter (see [perftest.py](perftest.py)):
+For example incrementing a counter (for the details see [perftest.py](perftest.py)):
 
 ```python
 state.counter = 0

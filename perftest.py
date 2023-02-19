@@ -11,23 +11,38 @@ from sqlitedict import SqliteDict
 from persistedstate import PersistedState
 
 COUNT_TO = 10_000
-TMP_FOLDER = pathlib.Path("tmp")
+TMP_FOLDER = pathlib.Path("tmp/perftest")
+STATE = PersistedState("tmp/perftest.state")
+ITERATIONS = 5
+
+TMP_FOLDER.mkdir(parents=True, exist_ok=True)
 
 
 class BaseTest:
     def do_the_count(self):
         pass
 
-    def perftest(self):
-        start = time.perf_counter()
-        self.do_the_count()
-        end = time.perf_counter()
+    def perftest(self, iteration):
         test_name = self.__class__.__name__.replace("Test", "")
-        print(f"{test_name:<15s} {end-start:6.3f} sec")
+        STATE.setdefault(test_name, [])
+        if len(STATE[test_name]) > iteration:
+            duration = STATE[test_name][iteration]
+        else:
+            start = time.perf_counter()
+            self.do_the_count()
+            end = time.perf_counter()
+            duration = end - start
+            STATE[test_name] += [duration]
+        print(f"{test_name:<15s} {duration:6.3f} sec")
+
+    def print_best_result(self):
+        test_name = self.__class__.__name__.replace("Test", "")
+        duration = min(STATE[test_name])
+        print(f"{test_name:<15s} {duration:6.3f} sec")
 
 
 class PersistedStateTest(BaseTest):
-    def __init__(self) -> None:
+    def __init__(self):
         file = TMP_FOLDER / "persisted.state"
         file.unlink(missing_ok=True)
         self.state = PersistedState(file)
@@ -83,10 +98,26 @@ class LmdbTest(BaseDictTest):
         self.dict = JsonLmdb.open((TMP_FOLDER / "lmdb").as_posix(), "c")
 
 
-print(f"Counting to {COUNT_TO}")
-PersistedStateTest().perftest()
-DiskCacheTest().perftest()
-SqliteDictTest().perftest()
-ShelveTest().perftest()
-PickleDbTest().perftest()
-LmdbTest().perftest()
+TEST_CLASSES = [
+    PersistedStateTest,
+    DiskCacheTest,
+    SqliteDictTest,
+    PickleDbTest,
+    LmdbTest,
+    ShelveTest,
+]
+
+
+def main():
+    del STATE["PersistedState"]
+    print(f"Counting to {COUNT_TO}")
+    for iteration in range(ITERATIONS):
+        print(f"\nIteration #{iteration}\n")
+        for klass in TEST_CLASSES:
+            klass().perftest(iteration)
+    print(f"\nBest results:\n")
+    for klass in TEST_CLASSES:
+        klass().print_best_result()
+
+
+main()
