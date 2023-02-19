@@ -1,3 +1,7 @@
+# 23.4
+
+- In-file vacuuming
+
 # 23.3
 
 - Use YAML file format, not just a subset of YAML
