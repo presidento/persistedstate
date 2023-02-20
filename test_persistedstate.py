@@ -13,9 +13,9 @@ class TestAttributes():
             pass
 
     def test_default_values(self):
-        state = PersistedState(self.filepath, num=42, string="Hello")
-        assert state.num == 42
-        assert state.string == "Hello"
+        with PersistedState(self.filepath, num=42, string="Hello") as state:
+            assert state.num == 42
+            assert state.string == "Hello"
 
     def test_persisting_attributes(self):
         with PersistedState(self.filepath, string="Hello") as state:

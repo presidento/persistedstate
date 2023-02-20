@@ -42,15 +42,13 @@ class BaseTest:
 
 
 class PersistedStateTest(BaseTest):
-    def __init__(self):
+    def do_the_count(self):
         file = TMP_FOLDER / "persisted.state"
         file.unlink(missing_ok=True)
-        self.state = PersistedState(file)
-
-    def do_the_count(self):
-        self.state.counter = 0
-        for _ in range(COUNT_TO):
-            self.state.counter += 1
+        with PersistedState(file) as state:
+            state.counter = 0
+            for _ in range(COUNT_TO):
+                state.counter += 1
 
 
 class BaseDictTest(BaseTest):
