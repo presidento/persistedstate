@@ -11,6 +11,8 @@ logger = logging.getLogger(__name__)
 
 JsonType = Union[MutableMapping, MutableSequence, str, int, float, bool, None]
 
+SPAM_LOG = 5
+
 
 class YamlDict(MutableMapping):
     def __init__(self, file_handler, path, initial_dict):
@@ -163,26 +165,23 @@ class FileHandler:
                 for key, value in update.items():
                     self.__parent[key] = value
             elif update[0] == "set":
-                _, path, key, value = update
-                obj = self.__parent
-                for selector in path:
-                    obj = obj[selector]
-                obj[key] = value
+                path, key, value = update[1:]
+                self.__leaf_object(path)[key] = value
             elif update[0] == "delete":
-                _, path, key = update
-                obj = self.__parent
-                for selector in path:
-                    obj = obj[selector]
-                del obj[key]
+                path, key = update[1:]
+                del self.__leaf_object(path)[key]
             elif update[0] == "insert":
-                _, path, index, value = update
-                obj = self.__parent
-                for selector in path:
-                    obj = obj[selector]
-                obj.insert(index, value)
+                path, index, value = update[1:]
+                self.__leaf_object(path).insert(index, value)
             else:
                 raise RuntimeError(f"Unknow update step during recovery: {update}")
         self.__loading = False
+
+    def __leaf_object(self, path):
+        obj = self.__parent
+        for selector in path:
+            obj = obj[selector]
+        return obj
 
     def close(self, do_logging=True):
         if self.__file.closed:
