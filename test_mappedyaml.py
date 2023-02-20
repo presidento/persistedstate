@@ -71,3 +71,50 @@ class TestTopLevelDict(Base):
         assert state.a == "AA"
         assert "b" not in state
         assert state.c == "c"
+
+class TestNestedDict(Base):
+    input_data = """
+        top:
+            a: a
+            b: b
+            c: c
+        """
+
+    def change(self, state):
+        state.top["a"] = "AA"
+        del state.top["b"]
+
+    def assertions(self, state):
+        assert state.top["a"] == "AA"
+        assert "b" not in state.top
+        assert state.top["c"] == "c"
+
+class TestList(Base):
+    input_data = """
+        list:
+        - 20
+        - 30
+        - 40
+        """
+
+    def change(self, state):
+        del state.list[1]
+        state.list.insert(0, 10)
+        state.list.append(50)
+
+    def assertions(self, state):
+        assert [10, 20, 40, 50] == list(state.list)
+
+class TestMultiChange(Base):
+    def change(self, state):
+        state.list = [{"a": "A"}, 1, 2]
+        state.list[0]["b"] = "B"
+        del state.list[0]["a"]
+        state.list[2] += 10
+        state.list.append({"c": "C"})
+        state.list[3]["c"] = "CC"
+
+    def assertions(self, state):
+        assert dict(state.list[0]) == {"b": "B"}
+        assert state.list[2] == 12
+        assert state.list[3]["c"] == "CC"

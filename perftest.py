@@ -32,7 +32,7 @@ class BaseTest:
             self.do_the_count()
             end = time.perf_counter()
             duration = end - start
-            STATE[test_name] += [duration]
+            STATE[test_name].append(duration)
         print(f"{test_name:<15s} {duration:6.3f} sec")
 
     def print_best_result(self):
