@@ -17,11 +17,21 @@ print("Processing DONE.")
 You can interrupt this script, and next time it will continue from the first unprocessed item.
 As another example see [perftest.py](perftest.py).
 
-## YAML state file
+## Mapped YAML state file
 
 The use case is persisting small amount of data which can be edited easily with a text editor.
 The database is an UTF-8 encoded YAML file, so it can be highlighted and edited manually if needed.
 (It also uses YAML stream file format for journal.)
+The YAML file is fully mapped to Python objects, so every change is synchronized to disk immediately. E.g. you can do this:
+
+```python
+STATE = PersistedState("state.yaml", processed_items=[])
+STATE.setdefault("key", {})
+STATE["key"].setdefault("nested", 2)
+
+STATE.processed_items.append("<some item>")
+STATE["key"]["nested"] += 1
+```
 
 ## Failure tolerance
 
