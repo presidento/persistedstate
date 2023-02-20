@@ -161,7 +161,10 @@ class FileHandler:
         for update in yaml.safe_load_all(self.__file):
             if logger.isEnabledFor(SPAM_LOG):
                 logger.log(SPAM_LOG, f"Update step: {update}")
-            if type(update) == dict:
+            if update is None:
+                continue
+            elif type(update) == dict:
+                self.__parent.clear()
                 for key, value in update.items():
                     self.__parent[key] = value
             elif update[0] == "set":
