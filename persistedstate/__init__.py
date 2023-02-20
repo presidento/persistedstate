@@ -122,11 +122,12 @@ class FileHandler:
     def record_change(self, *args):
         if self.__loading:
             return
-        self.__file.write(
-            "\n---\n" + json.dumps([*args], cls=CustomJsonEncoder, ensure_ascii=False)
-        )
+        change_text = json.dumps([*args], cls=CustomJsonEncoder, ensure_ascii=False)
+        self.__file.write("\n---\n" + change_text)
         self.__file.flush()
         self.__change_count += 1
+        if logger.isEnabledFor(SPAM_LOG):
+            logger.log(SPAM_LOG, "Change: " + change_text)
         if self.__change_count >= self._VACUUM_ON_CHANGE:
             self.vacuum()
             self.__change_count = 0
@@ -156,6 +157,8 @@ class FileHandler:
                 f"File size on load: {self.__filepath.stat().st_size // 1024} kb"
             )
         for update in yaml.safe_load_all(self.__file):
+            if logger.isEnabledFor(SPAM_LOG):
+                logger.log(SPAM_LOG, f"Update step: {update}")
             if type(update) == dict:
                 for key, value in update.items():
                     self.__parent[key] = value
@@ -184,9 +187,9 @@ class FileHandler:
     def close(self, do_logging=True):
         if self.__file.closed:
             return
+        self.vacuum(do_logging)
         if logger.isEnabledFor(logging.DEBUG) and do_logging:
             logger.debug("Close file")
-        self.vacuum(do_logging)
         self.__file.close()
 
     def __del__(self):
@@ -216,7 +219,13 @@ class PersistedState(MappedYaml):
     def __init__(self, _filepath: os.PathLike, **defaults):
         super().__init__(_filepath)
         for key, value in defaults.items():
-            self.setdefault(key, value)
+            new_value = self.setdefault(key, value)
+            if logger.isEnabledFor(SPAM_LOG):
+                if value == new_value:
+                    verb = "IS"
+                else:
+                    verb = "isn't"
+                logger.log(SPAM_LOG, f"Default value {verb} set: {key} = {value}")
 
     def __getattr__(self, __name):
         try:
@@ -229,5 +238,7 @@ class PersistedState(MappedYaml):
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name.startswith("_"):
             object.__setattr__(self, __name, __value)
+            if logger.isEnabledFor(SPAM_LOG):
+                logger.log(SPAM_LOG, f"Setting Python attribute {__name} = {__value}")
             return
         self[__name] = __value

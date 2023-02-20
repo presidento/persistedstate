@@ -1,7 +1,8 @@
-import logging
+import scripthelper
+
 from persistedstate import PersistedState
 
-logging.basicConfig(level=logging.DEBUG)
+scripthelper.bootstrap()
 
 state = PersistedState("tmp/loggertest.state", string="Hello")
 state.string = "Ahoi"
