@@ -3,11 +3,11 @@ import setuptools
 
 setuptools.setup(
     name="persistedstate",
-    version="23.4",
+    version="23.5",
     scripts=[],
     author="Máté Farkas",
     author_email="fm@farkas-mate.hu",
-    description="Ultra fast persistent store for small states in YAML file",
+    description="Ultra fast persistent store for small states in mapped YAML file",
     long_description=pathlib.Path("README.md").read_text(encoding="utf-8"),
     long_description_content_type="text/markdown",
     url="https://github.com/presidento/persistedstate",

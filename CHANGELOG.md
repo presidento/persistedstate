@@ -1,3 +1,7 @@
+# 23.5
+
+- Map the whole YAML file, so modification of nested objects are also persisted immediately
+
 # 23.4
 
 - In-file vacuuming
