@@ -7,14 +7,17 @@ set shell := ["powershell", "-nop", "-c"]
 bootstrap:
     New-Item "tmp" -ItemType Directory -Force | Out-Null
     @foreach ($version in ('{{ SUPPORTED_VERSIONS }}' -split '\s+')) { just bootstrap-with "$version" }
-    & ".{{ DEFAULT_VERSION }}.venv\Scripts\python.exe" -m pip install mypy setuptools twine pip-tools --quiet --upgrade
-    & ".{{ DEFAULT_VERSION }}.venv\Scripts\python.exe" -m pip install -r requirements-perf.txt
+    & ".{{ DEFAULT_VERSION }}.venv\Scripts\python.exe" -m pip install -r requirements-dev.txt
 
 # Set up Python environment with specified Python version
 bootstrap-with VERSION:
     If (-not (Test-Path .{{ VERSION }}.venv)) { py -{{ VERSION }} -m venv .{{ VERSION }}.venv }
-    & ".{{ VERSION }}.venv\Scripts\python.exe" -m pip install --upgrade pip wheel pytest
+    & ".{{ VERSION }}.venv\Scripts\python.exe" -m pip install --upgrade pip
+    & ".{{ VERSION }}.venv\Scripts\python.exe" -m pip install -r requirements-test.txt
     & ".{{ VERSION }}.venv\Scripts\python.exe" -m pip install . --upgrade --upgrade-strategy eager
+
+# Run every check against source code
+check-all: mypy test
 
 # Check static typing
 mypy:
@@ -22,7 +25,7 @@ mypy:
     & ".{{ DEFAULT_VERSION }}.venv\Scripts\mypy.exe" persistedstate
 
 # Test with all supported Python versions
-test: mypy
+test:
     @foreach ($version in ('{{ SUPPORTED_VERSIONS }}' -split '\s+')) { just test-with "$version" }
 
 # Run the tests with specified Python version
@@ -37,7 +40,8 @@ clean:
 
 # Upgrade depedencies
 upgrade-deps:
-    & ".{{ DEFAULT_VERSION }}.venv\Scripts\python.exe" -m piptools compile --output-file=requirements-perf.txt requirements-perf.in --upgrade
+    & ".{{ DEFAULT_VERSION }}.venv\Scripts\python.exe" -m piptools compile --output-file=requirements-test.txt --upgrade requirements-test.in
+    & ".{{ DEFAULT_VERSION }}.venv\Scripts\python.exe" -m piptools compile --output-file=requirements-dev.txt --upgrade requirements-dev.in requirements-test.in
 
 # Run performance test
 perftest:
@@ -45,7 +49,7 @@ perftest:
 
 # Build the whole project, create a release
 build: clean bootstrap test
-    & ".{{ DEFAULT_VERSION }}.venv\Scripts\python.exe" setup.py sdist bdist_wheel
+    & ".{{ DEFAULT_VERSION }}.venv\Scripts\python.exe" -m build
 
 # Upload the release to PyPi
 upload:
