@@ -1,0 +1,33 @@
+import pathlib
+import textwrap
+
+from persistedstate import PersistedState
+
+class TestAttributes():
+    def setup_method(self) -> None:
+        self.filepath = pathlib.Path("tmp/test.state")
+        try:
+            self.filepath.unlink()
+        except FileNotFoundError:
+            # missing_ok parameter is not available in Python 3.7
+            pass
+
+    def test_default_values(self):
+        state = PersistedState(self.filepath, num=42, string="Hello")
+        assert state.num == 42
+        assert state.string == "Hello"
+
+    def test_persisting_attributes(self):
+        with PersistedState(self.filepath, string="Hello") as state:
+            state.bool = True
+            state.string = "Ahoi"
+        with PersistedState(self.filepath) as state:
+            assert state.bool
+            assert state.string == "Ahoi"
+        expected_state = textwrap.dedent(
+            """
+            bool: true
+            string: Ahoi
+            """
+        ).strip()
+        assert expected_state == self.filepath.read_text().strip()

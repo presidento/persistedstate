@@ -13,7 +13,7 @@ bootstrap:
 # Set up Python environment with specified Python version
 bootstrap-with VERSION:
     If (-not (Test-Path .{{ VERSION }}.venv)) { py -{{ VERSION }} -m venv .{{ VERSION }}.venv }
-    & ".{{ VERSION }}.venv\Scripts\python.exe" -m pip install --upgrade pip wheel
+    & ".{{ VERSION }}.venv\Scripts\python.exe" -m pip install --upgrade pip wheel pytest
     & ".{{ VERSION }}.venv\Scripts\python.exe" -m pip install . --upgrade --upgrade-strategy eager
 
 # Check static typing
@@ -27,7 +27,7 @@ test: mypy
 
 # Run the tests with specified Python version
 test-with VERSION:
-    & ".{{ VERSION }}.venv\Scripts\python.exe" .\test.py
+    & ".{{ VERSION }}.venv\Scripts\pytest.exe"
 
 # Remove compiled assets
 clean:
