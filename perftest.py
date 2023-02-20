@@ -109,7 +109,7 @@ TEST_CLASSES = [
 
 
 def main():
-    del STATE["PersistedState"]
+    STATE.pop("PersistedState", None)
     print(f"Counting to {COUNT_TO}")
     for iteration in range(ITERATIONS):
         print(f"\nIteration #{iteration}\n")
