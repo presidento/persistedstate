@@ -9,7 +9,7 @@ from typing import Any, Dict
 logger = logging.getLogger(__name__)
 
 
-class YamlDict(MutableMapping):
+class MappedYaml(MutableMapping):
     _VACUUM_ON_CHANGE = 2000
 
     def __init__(self, _filepath: os.PathLike):
@@ -86,7 +86,7 @@ class YamlDict(MutableMapping):
         return len(self.__cache)
 
 
-class PersistedState(YamlDict):
+class PersistedState(MappedYaml):
     def __init__(self, _filepath: os.PathLike, **defaults):
         super().__init__(_filepath)
         for key, value in defaults.items():

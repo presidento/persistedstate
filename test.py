@@ -2,7 +2,7 @@ import pathlib
 import textwrap
 import unittest
 
-from persistedstate import PersistedState, YamlDict
+from persistedstate import PersistedState, MappedYaml
 
 
 class TestYamlDict(unittest.TestCase):
@@ -16,7 +16,7 @@ class TestYamlDict(unittest.TestCase):
         return super().setUp()
 
     def test_keys_are_sorted(self):
-        with YamlDict(self.filepath) as mydict:
+        with MappedYaml(self.filepath) as mydict:
             mydict["d"] = 10
             mydict["a"] = 1
             mydict["f"] = 100
@@ -31,12 +31,12 @@ class TestYamlDict(unittest.TestCase):
 
     def test_journal(self):
         tmp_file = self.filepath.with_name("test2.yaml")
-        with YamlDict(self.filepath) as mydict:
+        with MappedYaml(self.filepath) as mydict:
             mydict["a"] = 1
             mydict["b"] = 2
             mydict["c"] = 3
 
-        with YamlDict(self.filepath) as mydict:
+        with MappedYaml(self.filepath) as mydict:
             mydict["a"] = 10
             del mydict["b"]
             mydict["d"] = 4
@@ -57,7 +57,7 @@ class TestYamlDict(unittest.TestCase):
                 """
             ).strip()
             assert data_with_journal == expected
-            assert dict(mydict) == dict(YamlDict(tmp_file))
+            assert dict(mydict) == dict(MappedYaml(tmp_file))
 
     def test_dict_interface(self):
         with PersistedState(self.filepath) as state:
