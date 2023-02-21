@@ -114,11 +114,14 @@ class FileHandler:
         if logger.isEnabledFor(logging.DEBUG) and do_logging:
             logger.debug("Vacuuming")
         yaml_str = self.construct_yaml()
-        # If something goes wrong, have the last valid state at the end
+        self.__file.write(yaml_str)  # just padding
+        self.__file.write("\n---\n### LAST VALID STATE ###\n")
         self.__file.write(yaml_str)
         self.__file.seek(0)
         self.__file.write(yaml_str)
+        self.__file.write("...\n")
         self.__file.flush()
+        self.__file.seek(self.__file.tell() - 5)
         self.__file.truncate()
 
     def record_change(self, *args):
