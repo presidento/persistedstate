@@ -1,3 +1,9 @@
+# 23.6
+
+- Fix crash when the PersistedState is subclassed or constructed from another module
+- Make vacuum more failure tolerant. In some edge cases it was possible for the state at beginning to overlap the state at the end.
+- Internal: use `pyproject.toml` instead of `setup.py`
+
 # 23.5
 
 - Map the whole YAML file, so modification of nested objects are also persisted immediately
