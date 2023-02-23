@@ -41,9 +41,6 @@ class YamlDict(MutableMapping):
     def __len__(self) -> int:
         return self.__cache.__len__()
 
-    def toJSON(self):
-        return self.__cache
-
 
 class YamlList(MutableSequence):
     def __init__(self, file_handler, path, initial_list):
@@ -88,6 +85,16 @@ def convert(file_handler, path, value: JsonType):
     return value
 
 
+def convert_to_json_like(obj):
+    if isinstance(obj, str):
+        return obj
+    if isinstance(obj, Mapping):
+        return {key: convert_to_json_like(value) for key, value in obj.items()}
+    if isinstance(obj, Sequence):
+        return [convert_to_json_like(item) for item in obj]
+    return obj
+
+
 class CustomJsonEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, YamlDict):
@@ -113,7 +120,9 @@ class FileHandler:
     def vacuum(self, do_logging=True):
         if logger.isEnabledFor(logging.DEBUG) and do_logging:
             logger.debug("Vacuuming")
-        yaml_str = self.construct_yaml()
+        yaml_str = yaml.safe_dump(
+            convert_to_json_like(self.__parent), allow_unicode=True, sort_keys=True
+        )
         self.__file.write(yaml_str)  # just padding
         self.__file.write("\n---\n### LAST VALID STATE ###\n")
         self.__file.write(yaml_str)
@@ -136,16 +145,6 @@ class FileHandler:
         if self.__change_count >= self._VACUUM_ON_CHANGE:
             self.vacuum()
             self.__change_count = 0
-
-    def construct_yaml(self):
-        safe_dumper = yaml.SafeDumper
-        safe_dumper.add_representer(YamlList, self.list_representer)
-        safe_dumper.add_representer(YamlDict, self.dict_representer)
-        safe_dumper.add_representer(MappedYaml, self.dict_representer)
-        safe_dumper.add_representer(PersistedState, self.dict_representer)
-        return yaml.dump(
-            self.__parent, Dumper=safe_dumper, allow_unicode=True, sort_keys=True
-        )
 
     @staticmethod
     def dict_representer(dumper: yaml.SafeDumper, obj: YamlDict):
