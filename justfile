@@ -14,7 +14,7 @@ bootstrap-with VERSION:
     If (-not (Test-Path .{{ VERSION }}.venv)) { py -{{ VERSION }} -m venv .{{ VERSION }}.venv }
     & ".{{ VERSION }}.venv\Scripts\python.exe" -m pip install --upgrade pip
     & ".{{ VERSION }}.venv\Scripts\python.exe" -m pip install -r requirements-test.txt
-    & ".{{ VERSION }}.venv\Scripts\python.exe" -m pip install . --upgrade --upgrade-strategy eager
+    & ".{{ VERSION }}.venv\Scripts\python.exe" -m pip install -e . --upgrade --upgrade-strategy eager
 
 # Run every check against source code
 check-all: mypy test

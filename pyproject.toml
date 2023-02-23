@@ -30,5 +30,4 @@ Homepage = "https://github.com/presidento/persistedstate"
 Changelog = "https://github.com/presidento/persistedstate/blob/main/CHANGELOG.md"
 
 [tool.setuptools]
-packages = ["persistedstate"]
 package-data = {persistedstate = ["py.typed"]}

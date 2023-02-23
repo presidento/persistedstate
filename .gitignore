@@ -3,4 +3,4 @@ __pycache__
 /tmp/
 /build/
 /dist/
-/persistedstate.egg-info/
+*.egg-info/
