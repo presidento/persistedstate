@@ -3,7 +3,8 @@ import textwrap
 
 from persistedstate import PersistedState
 
-class TestAttributes():
+
+class TestAttributes:
     def setup_method(self) -> None:
         self.filepath = pathlib.Path("tmp/test.state")
         try:
