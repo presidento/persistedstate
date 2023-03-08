@@ -5,6 +5,7 @@ black
 build
 mypy
 pip-tools
+pylint
 scripthelper
 twine
 types-PyYAML

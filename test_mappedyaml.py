@@ -1,7 +1,8 @@
 import pathlib
-from persistedstate import PersistedState
-from abc import ABC, abstractmethod
 import textwrap
+from abc import ABC, abstractmethod
+
+from persistedstate import PersistedState
 
 TMP_PATH = pathlib.Path("tmp")
 BACKUP_PATH = TMP_PATH / "unittest-backup"

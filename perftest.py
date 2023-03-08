@@ -113,7 +113,7 @@ def main():
         print(f"\nIteration #{iteration}\n")
         for klass in TEST_CLASSES:
             klass().perftest(iteration)
-    print(f"\nBest results:\n")
+    print("\nBest results:\n")
     for klass in TEST_CLASSES:
         klass().print_best_result()
 

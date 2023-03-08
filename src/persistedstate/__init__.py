@@ -68,10 +68,10 @@ class YamlList(MutableSequence):
     def __len__(self) -> int:
         return self.__cache.__len__()
 
-    def insert(self, index, item):
-        self.__file_handler.record_change("insert", self.__path, index, item)
+    def insert(self, index, value):
+        self.__file_handler.record_change("insert", self.__path, index, value)
         return self.__cache.insert(
-            index, convert(self.__file_handler, self.__path + [index], item)
+            index, convert(self.__file_handler, self.__path + [index], value)
         )
 
 
@@ -96,12 +96,12 @@ def convert_to_json_like(obj):
 
 
 class CustomJsonEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, YamlDict):
-            return obj._YamlDict__cache
-        if isinstance(obj, YamlList):
-            return obj._YamlList__cache
-        return obj
+    def default(self, o):
+        if isinstance(o, YamlDict):
+            return o._YamlDict__cache
+        if isinstance(o, YamlList):
+            return o._YamlList__cache
+        return o
 
 
 class FileHandler:
@@ -165,7 +165,7 @@ class FileHandler:
                 logger.log(SPAM_LOG, f"Update step: {update}")
             if update is None:
                 continue
-            elif type(update) == dict:
+            if isinstance(update, dict):
                 self.__parent.clear()
                 for key, value in update.items():
                     self.__parent[key] = value

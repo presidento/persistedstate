@@ -1,0 +1,16 @@
+[MAIN]
+disable=
+    missing-docstring,
+    format,
+    logging-not-lazy,
+    protected-access,
+    logging-fstring-interpolation,
+
+[persisstedstate]
+disable=consider-using-with
+
+[test_persistedstate]
+disable=attribute-defined-outside-init
+
+[perftest]
+disable=no-member, invalid-name

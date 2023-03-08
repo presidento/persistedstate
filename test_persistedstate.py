@@ -30,4 +30,4 @@ class TestAttributes():
             string: Ahoi
             """
         ).strip()
-        assert expected_state == self.filepath.read_text().strip()
+        assert expected_state == self.filepath.read_text(encoding="utf-8").strip()

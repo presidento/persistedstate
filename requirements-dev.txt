@@ -4,6 +4,8 @@
 #
 #    pip-compile --output-file=requirements-dev.txt requirements-dev.in requirements-test.in
 #
+astroid==2.15.0
+    # via pylint
 attrs==22.2.0
     # via pytest
 black==23.1.0
@@ -27,12 +29,15 @@ colorama==0.4.6
     #   build
     #   click
     #   colorful
+    #   pylint
     #   pytest
     #   tqdm
 coloredlogs==15.0.1
     # via scripthelper
 colorful==0.5.5
     # via prettyprinter
+dill==0.3.6
+    # via pylint
 diskcache==5.4.0
     # via -r requirements-dev.in
 docutils==0.19
@@ -47,16 +52,22 @@ importlib-metadata==6.0.0
     #   twine
 iniconfig==2.0.0
     # via pytest
+isort==5.12.0
+    # via pylint
 jaraco-classes==3.2.3
     # via keyring
 keyring==23.13.1
     # via twine
+lazy-object-proxy==1.9.0
+    # via astroid
 lmdb==1.4.0
     # via lmdbm
 lmdbm==0.0.5
     # via -r requirements-dev.in
 markdown-it-py==2.1.0
     # via rich
+mccabe==0.7.0
+    # via pylint
 mdurl==0.1.2
     # via markdown-it-py
 more-itertools==9.0.0
@@ -83,7 +94,9 @@ pip-tools==6.12.2
 pkginfo==1.9.6
     # via twine
 platformdirs==3.0.0
-    # via black
+    # via
+    #   black
+    #   pylint
 pluggy==1.0.0
     # via pytest
 prettyprinter==0.18.0
@@ -93,6 +106,8 @@ pygments==2.14.0
     #   prettyprinter
     #   readme-renderer
     #   rich
+pylint==2.17.0
+    # via -r requirements-dev.in
 pyproject-hooks==1.0.0
     # via build
 pyreadline3==3.4.1
@@ -121,6 +136,8 @@ six==1.16.0
     # via bleach
 sqlitedict==2.1.0
     # via -r requirements-dev.in
+tomlkit==0.11.6
+    # via pylint
 tqdm==4.64.1
     # via scripthelper
 traceback-with-variables==2.0.4
@@ -141,6 +158,8 @@ webencodings==0.5.1
     # via bleach
 wheel==0.38.4
     # via pip-tools
+wrapt==1.15.0
+    # via astroid
 zipp==3.14.0
     # via importlib-metadata
 

@@ -17,11 +17,15 @@ bootstrap-with VERSION:
     ^".{{ VERSION }}.venv/Scripts/python.exe" -m pip install -e . --upgrade --upgrade-strategy eager
 
 # Run every check against source code
-check: mypy test
+check: mypy pylint test
 
 # Check static typing
 mypy:
-    ^".{{ DEFAULT_VERSION }}.venv/Scripts/mypy.exe" src *.py
+    ^".{{ DEFAULT_VERSION }}.venv/Scripts/python.exe" -m mypy src *.py
+
+# Static code analysis with Pylint
+pylint:
+    ^".{{ DEFAULT_VERSION }}.venv/Scripts/python.exe" -m pylint src *.py
 
 # Test with all supported Python versions
 test:
