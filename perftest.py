@@ -60,7 +60,7 @@ class BaseDictTest(BaseTest):
 
 class ShelveTest(BaseDictTest):
     def __init__(self) -> None:
-        self.dict = shelve.open(TMP_FOLDER / "shelve.dat")
+        self.dict = shelve.open((TMP_FOLDER / "shelve.dat").as_posix())
 
 
 class SqliteDictTest(BaseDictTest):

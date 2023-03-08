@@ -201,7 +201,7 @@ class FileHandler:
 
 
 class MappedYaml(YamlDict):
-    def __init__(self, _filepath: os.PathLike):
+    def __init__(self, _filepath: Union[str, os.PathLike]):
         self.__file_handler = FileHandler(self, _filepath)
         super().__init__(self.__file_handler, [], {})
         self.__file_handler.load()
@@ -220,7 +220,7 @@ class MappedYaml(YamlDict):
 
 
 class PersistedState(MappedYaml):
-    def __init__(self, _filepath: os.PathLike, **defaults):
+    def __init__(self, _filepath: Union[str, os.PathLike], **defaults):
         super().__init__(_filepath)
         for key, value in defaults.items():
             new_value = self.setdefault(key, value)

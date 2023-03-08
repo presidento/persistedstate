@@ -21,7 +21,7 @@ check-all: mypy test
 
 # Check static typing
 mypy:
-    ^".{{ DEFAULT_VERSION }}.venv/Scripts/mypy.exe" src
+    ^".{{ DEFAULT_VERSION }}.venv/Scripts/mypy.exe" src *.py
 
 # Test with all supported Python versions
 test:
