@@ -17,7 +17,7 @@ bootstrap-with VERSION:
     ^".{{ VERSION }}.venv/Scripts/python.exe" -m pip install -e . --upgrade --upgrade-strategy eager
 
 # Run every check against source code
-check-all: mypy test
+check: mypy test
 
 # Check static typing
 mypy:
