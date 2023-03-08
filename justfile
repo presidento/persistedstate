@@ -17,7 +17,7 @@ bootstrap-with VERSION:
     ^".{{ VERSION }}.venv/Scripts/python.exe" -m pip install -e . --upgrade --upgrade-strategy eager
 
 # Run every check against source code
-check: mypy pylint test
+check: black mypy pylint test
 
 # Check static typing
 mypy:
@@ -26,6 +26,10 @@ mypy:
 # Static code analysis with Pylint
 pylint:
     ^".{{ DEFAULT_VERSION }}.venv/Scripts/python.exe" -m pylint src *.py
+
+# Check code formatting
+black:
+    ^".{{ DEFAULT_VERSION }}.venv/Scripts/python.exe" -m black --check src *.py
 
 # Test with all supported Python versions
 test:
