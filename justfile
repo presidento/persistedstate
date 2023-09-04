@@ -1,7 +1,7 @@
 set shell := ["nu", "-c"]
 
 DEFAULT_VERSION := "3.11"
-SUPPORTED_VERSIONS := "['3.7' '3.8' '3.9' '3.10' '3.11']"
+SUPPORTED_VERSIONS := "['3.8' '3.9' '3.10' '3.11']"
 
 # Bootstrap with all supported Python versions
 bootstrap:
