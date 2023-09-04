@@ -21,6 +21,25 @@ classifiers = [
 ]
 dependencies = ["pyyaml"]
 
+[project.optional-dependencies]
+dev = [
+    "black",
+    "mypy",
+    "pylint",
+    "scripthelper",
+    "twine",
+    "types-PyYAML",
+]
+test = [
+    "pytest"
+]
+perftest = [
+    "diskcache",
+    "lmdbm",
+    "pickledb",
+    "sqlitedict",
+]
+
 [[project.authors]]
 name = "Máté Farkas"
 email = "fm@farkas-mate.hu"

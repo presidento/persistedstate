@@ -12,7 +12,7 @@ bootstrap:
 # Set up Python environment with specified Python version
 bootstrap-with VERSION:
     if not (".{{ VERSION }}.venv" | path exists) { py -{{ VERSION }} -m venv .{{ VERSION }}.venv }
-    just python {{ VERSION }} -m pip install --upgrade pip
+    just python {{ VERSION }} -m pip install --upgrade pip pip-tools build twine
     just python {{ VERSION }} -m pip install -r requirements-test.txt
     just python {{ VERSION }} -m pip install -e . --upgrade --upgrade-strategy eager
 
@@ -53,8 +53,8 @@ clean:
 
 # Upgrade depedencies
 upgrade-deps:
-    just py -m piptools compile --output-file=requirements-test.txt --upgrade requirements-test.in --resolver=backtracking
-    just py -m piptools compile --output-file=requirements-dev.txt --upgrade requirements-dev.in requirements-test.in --resolver=backtracking
+    just py -m piptools compile pyproject.toml --output-file=requirements-test.txt --upgrade --resolver=backtracking --extra test
+    just py -m piptools compile pyproject.toml --output-file=requirements-dev.txt  --upgrade --resolver=backtracking --extra dev --extra perftest
 
 # Run performance test
 perftest:
