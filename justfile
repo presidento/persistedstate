@@ -7,29 +7,37 @@ SUPPORTED_VERSIONS := "['3.8' '3.9' '3.10' '3.11' '3.12']"
 bootstrap:
     mkdir tmp
     for version in {{ SUPPORTED_VERSIONS }} { just bootstrap-with $version }
-    ^".{{ DEFAULT_VERSION }}.venv/Scripts/python.exe" -m pip install -r requirements-dev.txt
+    just py -m pip install -r requirements-dev.txt
 
 # Set up Python environment with specified Python version
 bootstrap-with VERSION:
     if not (".{{ VERSION }}.venv" | path exists) { py -{{ VERSION }} -m venv .{{ VERSION }}.venv }
-    ^".{{ VERSION }}.venv/Scripts/python.exe" -m pip install --upgrade pip
-    ^".{{ VERSION }}.venv/Scripts/python.exe" -m pip install -r requirements-test.txt
-    ^".{{ VERSION }}.venv/Scripts/python.exe" -m pip install -e . --upgrade --upgrade-strategy eager
+    just python {{ VERSION }} -m pip install --upgrade pip
+    just python {{ VERSION }} -m pip install -r requirements-test.txt
+    just python {{ VERSION }} -m pip install -e . --upgrade --upgrade-strategy eager
+
+# Run a specific Python interpreter
+python VERSION *ARGS:
+    @^".{{ VERSION }}.venv/Scripts/python.exe" -X dev {{ ARGS }}
+
+# Run python command with the default Python version
+py *ARGS:
+    @just python {{DEFAULT_VERSION }} {{ ARGS }}
 
 # Run every check against source code
 check: black mypy pylint test
 
 # Check static typing
 mypy:
-    ^".{{ DEFAULT_VERSION }}.venv/Scripts/python.exe" -m mypy src *.py
+    just py -m mypy src *.py
 
 # Static code analysis with Pylint
 pylint:
-    ^".{{ DEFAULT_VERSION }}.venv/Scripts/python.exe" -m pylint src *.py
+    just py -m pylint src *.py
 
 # Check code formatting
 black:
-    ^".{{ DEFAULT_VERSION }}.venv/Scripts/python.exe" -m black --check src *.py
+    just py -m black --check src *.py
 
 # Test with all supported Python versions
 test:
@@ -41,21 +49,21 @@ test-with VERSION:
 
 # Remove compiled assets
 clean:
-    rm --force --verbose build dist persistedstate.egg-info
+    rm --force --recursive --verbose build dist persistedstate.egg-info
 
 # Upgrade depedencies
 upgrade-deps:
-    ^".{{ DEFAULT_VERSION }}.venv/Scripts/python.exe" -m piptools compile --output-file=requirements-test.txt --upgrade requirements-test.in
-    ^".{{ DEFAULT_VERSION }}.venv/Scripts/python.exe" -m piptools compile --output-file=requirements-dev.txt --upgrade requirements-dev.in requirements-test.in
+    just py -m piptools compile --output-file=requirements-test.txt --upgrade requirements-test.in --resolver=backtracking
+    just py -m piptools compile --output-file=requirements-dev.txt --upgrade requirements-dev.in requirements-test.in --resolver=backtracking
 
 # Run performance test
 perftest:
-    ^".{{ DEFAULT_VERSION }}.venv/Scripts/python.exe" perftest.py
+    just py perftest.py
 
 # Build the whole project, create a release
 build: clean bootstrap test
-    ^".{{ DEFAULT_VERSION }}.venv/Scripts/python.exe" -m build
+    just py -m build
 
 # Upload the release to PyPi
 upload:
-    ^".{{ DEFAULT_VERSION }}.venv/Scripts/python.exe" -m twine upload dist/*
+    just py -m twine upload dist/*
