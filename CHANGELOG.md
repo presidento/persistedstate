@@ -1,3 +1,8 @@
+# 23.8
+
+- Remove Python 3.7 support
+- Add Python 3.12 support
+
 # 23.6
 
 - Fix crash when the PersistedState is subclassed or constructed from another module
