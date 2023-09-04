@@ -61,7 +61,7 @@ perftest:
     just py perftest.py
 
 # Build the whole project, create a release
-build: clean bootstrap test
+build: clean bootstrap check
     just py -m build
 
 # Upload the release to PyPi
