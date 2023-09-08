@@ -37,6 +37,17 @@ STATE["key"]["nested"] += 1
 
 It uses Write-Ahead-Logging and atomic vacuum, so there will be no data loss.
 
+## Thread safe
+
+Changing the state is thread safe. You also can use the `._thread_lock` attribute to make atomic changes:
+
+
+```python
+def atomic_increment():
+    with STATE._thread_lock:
+        STATE.counter += 1
+```
+
 ## Performance
 
 For its use case it outperforms existing key-value store modules.

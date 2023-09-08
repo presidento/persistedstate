@@ -3,6 +3,7 @@ import logging
 import os
 import pathlib
 from collections.abc import Mapping, MutableMapping, MutableSequence, Sequence
+from threading import RLock
 from typing import Any, Iterator, Union
 
 import yaml
@@ -19,18 +20,21 @@ class YamlDict(MutableMapping):
         self.__file_handler = file_handler
         self.__path = path
         self.__cache = {}
+        self.__lock = file_handler.lock
         for key, value in initial_dict.items():
             self.__cache[key] = convert(self.__file_handler, self.__path + [key], value)
 
     def __setitem__(self, __key: str, __value: JsonType) -> None:
-        self.__file_handler.record_change("set", self.__path, __key, __value)
-        return self.__cache.__setitem__(
-            __key, convert(self.__file_handler, self.__path + [__key], __value)
-        )
+        with self.__lock:
+            self.__file_handler.record_change("set", self.__path, __key, __value)
+            return self.__cache.__setitem__(
+                __key, convert(self.__file_handler, self.__path + [__key], __value)
+            )
 
     def __delitem__(self, __key: str) -> None:
-        self.__file_handler.record_change("delete", self.__path, __key)
-        return self.__cache.__delitem__(__key)
+        with self.__lock:
+            self.__file_handler.record_change("delete", self.__path, __key)
+            return self.__cache.__delitem__(__key)
 
     def __getitem__(self, __key: str) -> JsonType:
         return self.__cache.__getitem__(__key)
@@ -47,20 +51,23 @@ class YamlList(MutableSequence):
         self.__file_handler = file_handler
         self.__path = path
         self.__cache = []
+        self.__lock = file_handler.lock
         for item in initial_list:
             self.__cache.append(
                 convert(self.__file_handler, self.__path + [len(self.__cache)], item)
             )
 
     def __setitem__(self, index: int, item: JsonType) -> None:
-        self.__file_handler.record_change("set", self.__path, index, item)
-        return self.__cache.__setitem__(
-            index, convert(self.__file_handler, self.__path + [index], item)
-        )
+        with self.__lock:
+            self.__file_handler.record_change("set", self.__path, index, item)
+            return self.__cache.__setitem__(
+                index, convert(self.__file_handler, self.__path + [index], item)
+            )
 
     def __delitem__(self, index: int) -> None:
-        self.__file_handler.record_change("delete", self.__path, index)
-        return self.__cache.__delitem__(index)
+        with self.__lock:
+            self.__file_handler.record_change("delete", self.__path, index)
+            return self.__cache.__delitem__(index)
 
     def __getitem__(self, index: int) -> JsonType:
         return self.__cache.__getitem__(index)
@@ -69,10 +76,11 @@ class YamlList(MutableSequence):
         return self.__cache.__len__()
 
     def insert(self, index, value):
-        self.__file_handler.record_change("insert", self.__path, index, value)
-        return self.__cache.insert(
-            index, convert(self.__file_handler, self.__path + [index], value)
-        )
+        with self.__lock:
+            self.__file_handler.record_change("insert", self.__path, index, value)
+            return self.__cache.insert(
+                index, convert(self.__file_handler, self.__path + [index], value)
+            )
 
 
 def convert(file_handler, path, value: JsonType):
@@ -116,35 +124,38 @@ class FileHandler:
         self.__file = self.__filepath.open("r+", encoding="utf-8")
         self.__change_count = 0
         self.__loading = True
+        self.lock = RLock()
 
     def vacuum(self, do_logging=True):
-        if logger.isEnabledFor(logging.DEBUG) and do_logging:
-            logger.debug("Vacuuming")
-        yaml_str = yaml.safe_dump(
-            convert_to_json_like(self.__parent), allow_unicode=True, sort_keys=True
-        )
-        self.__file.write(yaml_str)  # just padding
-        self.__file.write("\n---\n### LAST VALID STATE ###\n")
-        self.__file.write(yaml_str)
-        self.__file.seek(0)
-        self.__file.write(yaml_str)
-        self.__file.write("...\n")
-        self.__file.flush()
-        self.__file.seek(self.__file.tell() - 5)
-        self.__file.truncate()
+        with self.lock:
+            if logger.isEnabledFor(logging.DEBUG) and do_logging:
+                logger.debug("Vacuuming")
+            yaml_str = yaml.safe_dump(
+                convert_to_json_like(self.__parent), allow_unicode=True, sort_keys=True
+            )
+            self.__file.write(yaml_str)  # just padding
+            self.__file.write("\n---\n### LAST VALID STATE ###\n")
+            self.__file.write(yaml_str)
+            self.__file.seek(0)
+            self.__file.write(yaml_str)
+            self.__file.write("...\n")
+            self.__file.flush()
+            self.__file.seek(self.__file.tell() - 5)
+            self.__file.truncate()
 
     def record_change(self, *args):
         if self.__loading:
             return
-        change_text = json.dumps([*args], cls=CustomJsonEncoder, ensure_ascii=False)
-        self.__file.write("\n---\n" + change_text)
-        self.__file.flush()
-        self.__change_count += 1
-        if logger.isEnabledFor(SPAM_LOG):
-            logger.log(SPAM_LOG, f"Change ({self.__change_count}): {change_text}")
-        if self.__change_count >= self._VACUUM_ON_CHANGE:
-            self.vacuum()
-            self.__change_count = 0
+        with self.lock:
+            change_text = json.dumps([*args], cls=CustomJsonEncoder, ensure_ascii=False)
+            self.__file.write("\n---\n" + change_text)
+            self.__file.flush()
+            self.__change_count += 1
+            if logger.isEnabledFor(SPAM_LOG):
+                logger.log(SPAM_LOG, f"Change ({self.__change_count}): {change_text}")
+            if self.__change_count >= self._VACUUM_ON_CHANGE:
+                self.vacuum()
+                self.__change_count = 0
 
     @staticmethod
     def dict_representer(dumper: yaml.SafeDumper, obj: YamlDict):
@@ -203,6 +214,7 @@ class FileHandler:
 class MappedYaml(YamlDict):
     def __init__(self, _filepath: Union[str, os.PathLike]):
         self.__file_handler = FileHandler(self, _filepath)
+        self._thread_lock = self.__file_handler.lock
         super().__init__(self.__file_handler, [], {})
         self.__file_handler.load()
 
