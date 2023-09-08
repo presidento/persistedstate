@@ -14,7 +14,7 @@ class TestThreads:
     def test_thread_usage(self):
         self.open_state()
         with concurrent.futures.ThreadPoolExecutor(max_workers=NUM_OF_THREADS) as executor:
-            futures = (executor.submit(self.threaded_function) for _ in range(NUM_OF_THREADS))
+            futures = [executor.submit(self.threaded_function) for _ in range(NUM_OF_THREADS)]
             concurrent.futures.wait(futures)
         self.close_state()
 
