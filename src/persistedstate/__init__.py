@@ -112,7 +112,7 @@ class FileHandler:
         self.__filepath = pathlib.Path(filepath)
         self.__filepath.touch()
         if logger.isEnabledFor(logging.DEBUG):
-            logger.debug("Open file")
+            logger.debug(f"Open file {self.__filepath}")
         self.__file = self.__filepath.open("r+", encoding="utf-8")
         self.__change_count = 0
         self.__loading = True
@@ -141,7 +141,7 @@ class FileHandler:
         self.__file.flush()
         self.__change_count += 1
         if logger.isEnabledFor(SPAM_LOG):
-            logger.log(SPAM_LOG, "Change: " + change_text)
+            logger.log(SPAM_LOG, f"Change ({self.__change_count}): {change_text}")
         if self.__change_count >= self._VACUUM_ON_CHANGE:
             self.vacuum()
             self.__change_count = 0
