@@ -7,11 +7,7 @@ from persistedstate import PersistedState
 class TestAttributes:
     def setup_method(self) -> None:
         self.filepath = pathlib.Path("tmp/test.state")
-        try:
-            self.filepath.unlink()
-        except FileNotFoundError:
-            # missing_ok parameter is not available in Python 3.7
-            pass
+        self.filepath.unlink(missing_ok=True)
 
     def test_default_values(self):
         with PersistedState(self.filepath, num=42, string="Hello") as state:
