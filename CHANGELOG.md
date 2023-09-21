@@ -1,3 +1,7 @@
+# 23.9
+
+- Changing the state object is thread safe now.
+
 # 23.8
 
 - Remove Python 3.7 support
