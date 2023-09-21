@@ -147,15 +147,15 @@ class FileHandler:
         if self.__loading:
             return
         with self.lock:
+            if self.__change_count >= self._VACUUM_ON_CHANGE:
+                self.vacuum()
+                self.__change_count = 0
             change_text = json.dumps([*args], cls=CustomJsonEncoder, ensure_ascii=False)
             self.__file.write("\n---\n" + change_text)
             self.__file.flush()
             self.__change_count += 1
             if logger.isEnabledFor(SPAM_LOG):
                 logger.log(SPAM_LOG, f"Change ({self.__change_count}): {change_text}")
-            if self.__change_count >= self._VACUUM_ON_CHANGE:
-                self.vacuum()
-                self.__change_count = 0
 
     @staticmethod
     def dict_representer(dumper: yaml.SafeDumper, obj: YamlDict):
