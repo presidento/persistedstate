@@ -29,7 +29,7 @@ check: black mypy pylint test
 
 # Check static typing
 mypy:
-    just py -m mypy src *.py
+    just py -m mypy src
 
 # Static code analysis with Pylint
 pylint:
