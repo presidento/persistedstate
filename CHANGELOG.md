@@ -1,7 +1,10 @@
+# 24.2
+
+- Remove Python 3.8 support
+
 # 24.1
 
 - Official Python 3.13 support
-- Remove Python 3.8 support
 
 # 23.9
 
