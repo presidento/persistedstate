@@ -53,8 +53,8 @@ clean:
 
 # Upgrade depedencies
 upgrade-deps:
-    just py -m piptools compile pyproject.toml --output-file=requirements-test.txt --upgrade --resolver=backtracking --extra test
-    just py -m piptools compile pyproject.toml --output-file=requirements-dev.txt  --upgrade --resolver=backtracking --extra dev --extra perftest
+    just py -m piptools compile pyproject.toml --output-file=requirements-test.txt --upgrade --resolver=backtracking --no-annotate --extra test
+    just py -m piptools compile pyproject.toml --output-file=requirements-dev.txt  --upgrade --resolver=backtracking --no-annotate --extra dev --extra perftest
 
 # Run performance test
 perftest:
