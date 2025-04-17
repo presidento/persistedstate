@@ -3,7 +3,7 @@ name = "persistedstate"
 version = "24.2"
 description = "Ultra fast persistent store for small states in mapped YAML file"
 readme = "README.md"
-license = {text = "MIT License"}
+license = "MIT"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
@@ -22,16 +22,13 @@ classifiers = [
 requires-python = ">=3.9"
 dependencies = ["pyyaml"]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
     "black",
     "mypy",
     "pylint",
     "scripthelper",
-    "twine",
     "types-PyYAML",
-]
-test = [
     "pytest"
 ]
 perftest = [
@@ -49,5 +46,6 @@ email = "fm@farkas-mate.hu"
 Homepage = "https://github.com/presidento/persistedstate"
 Changelog = "https://github.com/presidento/persistedstate/blob/main/CHANGELOG.md"
 
-[tool.setuptools]
-package-data = {persistedstate = ["py.typed"]}
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"

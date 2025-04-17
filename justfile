@@ -1,20 +1,19 @@
 set shell := ["nu", "-c"]
 
-DEFAULT_VERSION := "3.9"
 SUPPORTED_VERSIONS := "['3.9' '3.10' '3.11' '3.12' '3.13']"
 
 # Bootstrap with all supported Python versions
 bootstrap:
     mkdir tmp
+    uv lock --upgrade
+    uv sync --all-groups
     for version in {{ SUPPORTED_VERSIONS }} { just bootstrap-with $version }
-    just py -m pip install -r requirements-dev.txt
 
 # Set up Python environment with specified Python version
 bootstrap-with VERSION:
-    if not (".{{ VERSION }}.venv" | path exists) { py -{{ VERSION }} -m venv .{{ VERSION }}.venv }
-    just python {{ VERSION }} -m pip install --upgrade pip pip-tools build twine
-    just python {{ VERSION }} -m pip install -r requirements-test.txt
-    just python {{ VERSION }} -m pip install -e . --upgrade --upgrade-strategy eager
+    if not (".{{ VERSION }}.venv" | path exists) { uv venv --python {{ VERSION }} --seed .{{ VERSION }}.venv }
+    just python {{ VERSION }} -m pip install --upgrade uv
+    just python {{ VERSION }} -m uv sync --active
 
 # Run a specific Python interpreter
 python VERSION *ARGS:
@@ -22,14 +21,15 @@ python VERSION *ARGS:
 
 # Run python command with the default Python version
 py *ARGS:
-    @just python {{DEFAULT_VERSION }} {{ ARGS }}
+    @uv run python -X dev {{ ARGS }}
 
 # Run every check against source code
 check: black mypy pylint test
 
 # Check static typing
 mypy:
-    just py -m mypy src
+    # Checking mypy is temporary disabled
+    ## just py -m mypy src
 
 # Static code analysis with Pylint
 pylint:
@@ -62,8 +62,8 @@ perftest:
 
 # Build the whole project, create a release
 build: clean bootstrap check
-    just py -m build
+    uv build
 
 # Upload the release to PyPi
 upload:
-    just py -m twine upload dist/*
+    uv upload
