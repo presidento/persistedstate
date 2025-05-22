@@ -1,9 +1,9 @@
 __pycache__
-.3.*.venv
+/.tox/
 /tmp/
 /build/
 /dist/
 *.egg-info/
 
-# Always test with the latest-greatest version
+# Always test with the latest-greatest versions
 uv.lock

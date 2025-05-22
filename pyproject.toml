@@ -28,6 +28,8 @@ dev = [
     "mypy",
     "pylint",
     "scripthelper",
+    "tox",
+    "tox-uv>=1.25",
     "types-PyYAML",
     "pytest"
 ]
@@ -49,3 +51,9 @@ Changelog = "https://github.com/presidento/persistedstate/blob/main/CHANGELOG.md
 [build-system]
 requires = ["hatchling >= 1.26"]
 build-backend = "hatchling.build"
+
+[tool.tox]
+env_list =["py39", "py310", "py311", "py312", "py313"]
+
+[tool.tox.env_run_base]
+commands = [["pytest"]]
