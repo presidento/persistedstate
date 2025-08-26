@@ -5,7 +5,7 @@ bootstrap:
     mkdir tmp
     uv lock --upgrade
     uv sync --all-groups
-    tox run --notest
+    uv run tox run --notest
 
 # Run python command with the default Python version
 py *ARGS:
@@ -33,7 +33,7 @@ test:
 
 # Test with all supported Python versions
 test-all:
-    tox run
+    uv run tox run
 
 # Remove compiled assets
 clean:
@@ -49,4 +49,4 @@ build: clean bootstrap check
 
 # Upload the release to PyPi
 upload:
-    uv upload
+    uv publish
