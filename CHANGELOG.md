@@ -1,3 +1,7 @@
+# 25.1
+
+- Add Python 3.14 support
+
 # 24.2
 
 - Remove Python 3.8 support

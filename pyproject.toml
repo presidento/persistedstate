@@ -1,6 +1,6 @@
 [project]
 name = "persistedstate"
-version = "24.2"
+version = "25.1"
 description = "Ultra fast persistent store for small states in mapped YAML file"
 readme = "README.md"
 license = "MIT"
