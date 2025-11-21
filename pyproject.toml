@@ -50,8 +50,8 @@ Homepage = "https://github.com/presidento/persistedstate"
 Changelog = "https://github.com/presidento/persistedstate/blob/main/CHANGELOG.md"
 
 [build-system]
-requires = ["hatchling >= 1.26"]
-build-backend = "hatchling.build"
+requires = ["uv_build>=0.9.10,<0.10.0"]
+build-backend = "uv_build"
 
 [tool.tox]
 env_list =["py310", "py311", "py312", "py313", "py314"]
