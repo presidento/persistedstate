@@ -54,7 +54,7 @@ requires = ["hatchling >= 1.26"]
 build-backend = "hatchling.build"
 
 [tool.tox]
-env_list =["py39", "py310", "py311", "py312", "py313", "py314"]
+env_list =["py310", "py311", "py312", "py313", "py314"]
 
 [tool.tox.env_run_base]
 commands = [["pytest"]]
