@@ -3,7 +3,6 @@ import pathlib
 import shelve
 import time
 
-from pickledb import PickleDB
 from diskcache import Cache
 from lmdbm import Lmdb
 from sqlitedict import SqliteDict
@@ -73,18 +72,6 @@ class DiskCacheTest(BaseDictTest):
         self.dict = Cache(TMP_FOLDER / "diskcache")
 
 
-class PickleDbTest(BaseTest):
-    def __init__(self) -> None:
-        self.db = PickleDB(TMP_FOLDER / "pickle.db")
-
-    def do_the_count(self):
-        with self.db:
-            self.db.set("counter", 0)
-        for _ in range(COUNT_TO):
-            with self.db:
-                self.db.set("counter", self.db.get("counter") + 1)
-
-
 class JsonLmdb(Lmdb):
     def _pre_value(self, value):
         return json.dumps(value).encode("utf-8")
@@ -102,7 +89,6 @@ TEST_CLASSES = [
     PersistedStateTest,
     DiskCacheTest,
     SqliteDictTest,
-    PickleDbTest,
     LmdbTest,
     ShelveTest,
 ]

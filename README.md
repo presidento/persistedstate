@@ -65,7 +65,6 @@ Counting to 10,000 (using Windows and Python 3.11):
 PersistedState   0.193 sec
 DiskCache        1.222 sec
 SqliteDict       3.089 sec
-PickleDb         8.251 sec
 Lmdb            14.944 sec
 Shelve          39.771 sec
 ```
