@@ -122,3 +122,40 @@ class TestMultiChange(Base):
         assert dict(state.list[0]) == {"b": "B"}
         assert state.list[2] == 12
         assert state.list[3]["c"] == "CC"
+
+
+class TestDeleteThenModifyNestedRef(Base):
+    """After deleting a list element, modifying a nested object via an old reference
+    must record the correct (shifted) path in the journal."""
+
+    def change(self, state):
+        state.entries = [{"id": 0}, {"id": 1}, {"id": 2}]
+        ref = state.entries[2]
+        del state.entries[0]
+        ref["modified"] = True
+
+    def assertions(self, state):
+        assert len(state.entries) == 2
+        assert state.entries[0]["id"] == 1
+        assert state.entries[1]["id"] == 2
+        assert state.entries[1]["modified"] is True
+
+
+class TestInsertThenModifyNestedRef(Base):
+    """After inserting into a list, modifying a nested object via an old reference
+    must record the correct (shifted) path in the journal."""
+
+    def change(self, state):
+        state.entries = [{"id": 0}, {"id": 1}, {"id": 2}]
+        ref = state.entries[1]
+        state.entries.insert(0, {"id": 99})
+        ref["modified"] = True
+
+    def assertions(self, state):
+        assert len(state.entries) == 4
+        assert state.entries[0]["id"] == 99
+        assert "modified" not in state.entries[0]
+        assert state.entries[1]["id"] == 0
+        assert state.entries[2]["id"] == 1
+        assert state.entries[2]["modified"] is True
+        assert state.entries[3]["id"] == 2

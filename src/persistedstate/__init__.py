@@ -67,7 +67,10 @@ class YamlList(MutableSequence):
     def __delitem__(self, index: int) -> None:
         with self.__lock:
             self.__file_handler.record_change("delete", self.__path, index)
-            return self.__cache.__delitem__(index)
+            self.__cache.__delitem__(index)
+            depth = len(self.__path)
+            for i in range(index, len(self.__cache)):
+                _update_path_index(self.__cache[i], depth, -1)
 
     def __getitem__(self, index: int) -> JsonType:
         return self.__cache.__getitem__(index)
@@ -77,6 +80,9 @@ class YamlList(MutableSequence):
 
     def insert(self, index, value):
         with self.__lock:
+            depth = len(self.__path)
+            for i in range(index, len(self.__cache)):
+                _update_path_index(self.__cache[i], depth, 1)
             self.__file_handler.record_change("insert", self.__path, index, value)
             return self.__cache.insert(
                 index, convert(self.__file_handler, self.__path + [index], value)
@@ -91,6 +97,18 @@ def convert(file_handler, path, value: JsonType):
     if isinstance(value, Sequence):
         return YamlList(file_handler, path, value)
     return value
+
+
+def _update_path_index(obj, depth, delta):
+    """Adjust the path component at `depth` by `delta` for obj and all its nested children."""
+    if isinstance(obj, YamlDict):
+        obj._YamlDict__path[depth] += delta
+        for child in obj._YamlDict__cache.values():
+            _update_path_index(child, depth, delta)
+    elif isinstance(obj, YamlList):
+        obj._YamlList__path[depth] += delta
+        for child in obj._YamlList__cache:
+            _update_path_index(child, depth, delta)
 
 
 def convert_to_json_like(obj):
