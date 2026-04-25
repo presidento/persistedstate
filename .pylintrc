@@ -6,7 +6,7 @@ disable=
     protected-access,
     logging-fstring-interpolation,
 
-[persisstedstate]
+[persistedstate]
 disable=consider-using-with
 
 [test_persistedstate]

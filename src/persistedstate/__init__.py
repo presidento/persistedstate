@@ -208,7 +208,7 @@ class FileHandler:
                 path, index, value = update[1:]
                 self.__leaf_object(path).insert(index, value)
             else:
-                raise RuntimeError(f"Unknow update step during recovery: {update}")
+                raise RuntimeError(f"Unknown update step during recovery: {update}")
         self.__loading = False
 
     def __leaf_object(self, path):
