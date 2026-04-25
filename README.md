@@ -33,6 +33,8 @@ STATE.processed_items.append("<some item>")
 STATE["key"]["nested"] += 1
 ```
 
+Note: slice operations on lists are not supported (e.g. `state.mylist[1:3]`). Use individual index access instead.
+
 ## Failure tolerance
 
 It uses Write-Ahead-Logging and atomic vacuum, so there will be no data loss.
