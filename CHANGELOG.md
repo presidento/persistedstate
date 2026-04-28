@@ -1,3 +1,10 @@
+# 26.1
+
+- Fix stale paths on list insertion and deletion
+- Clarify that slice operations are not supported
+- Use standard project layout, publish only the public API
+- Remove Python 3.9 support
+
 # 25.1
 
 - Add Python 3.14 support
