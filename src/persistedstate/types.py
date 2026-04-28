@@ -49,7 +49,7 @@ class YamlList(MutableSequence):
 
     def __setitem__(self, index: int, item: JsonType) -> None:
         if isinstance(index, slice):
-            raise TypeError("YamlList does not support slice assignment")
+            raise TypeError("Slice assignment is not supported")
         with self.__lock:
             self.__file_handler.record_change("set", self.__path, index, item)
             return self.__cache.__setitem__(
@@ -58,7 +58,7 @@ class YamlList(MutableSequence):
 
     def __delitem__(self, index: int) -> None:
         if isinstance(index, slice):
-            raise TypeError("YamlList does not support slice deletion")
+            raise TypeError("Slice deletion is not supported")
         with self.__lock:
             self.__file_handler.record_change("delete", self.__path, index)
             self.__cache.__delitem__(index)
@@ -67,8 +67,6 @@ class YamlList(MutableSequence):
                 _update_path_index(self.__cache[i], depth, -1)
 
     def __getitem__(self, index: int) -> JsonType:
-        if isinstance(index, slice):
-            raise TypeError("YamlList does not support slice access")
         return self.__cache.__getitem__(index)
 
     def __len__(self) -> int:
