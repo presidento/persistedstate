@@ -21,11 +21,11 @@ mypy:
 
 # Static code analysis with Pylint
 pylint:
-    just py -m pylint src *.py
+    just py -m pylint src tests examples
 
 # Check code formatting
 black:
-    just py -m black --check src *.py
+    just py -m black --check src tests examples benchmarks
 
 # Test with default Python version
 test:
@@ -41,7 +41,7 @@ clean:
 
 # Run performance test
 perftest:
-    just py perftest.py
+    just py benchmarks/perftest.py
 
 # Build the whole project, create a release
 build: clean bootstrap check

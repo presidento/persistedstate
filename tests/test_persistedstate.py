@@ -21,10 +21,8 @@ class TestAttributes:
         with PersistedState(self.filepath) as state:
             assert state.bool
             assert state.string == "Ahoi"
-        expected_state = textwrap.dedent(
-            """
+        expected_state = textwrap.dedent("""
             bool: true
             string: Ahoi
-            """
-        ).strip()
+            """).strip()
         assert expected_state == self.filepath.read_text(encoding="utf-8").strip()

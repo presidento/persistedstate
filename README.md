@@ -15,7 +15,7 @@ print("Processing DONE.")
 ```
 
 You can interrupt this script, and next time it will continue from the first unprocessed item.
-As another example see [perftest.py](perftest.py).
+As another example see [benchmarks/perftest.py](benchmarks/perftest.py).
 
 ## Mapped YAML state file
 
@@ -53,7 +53,7 @@ def atomic_increment():
 ## Performance
 
 For its use case it outperforms existing key-value store modules.
-For example incrementing a counter (for the details see [perftest.py](perftest.py)):
+For example incrementing a counter (for the details see [benchmarks/perftest.py](benchmarks/perftest.py)):
 
 ```python
 state.counter = 0

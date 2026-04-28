@@ -3,7 +3,7 @@ import pathlib
 import shutil
 import threading
 
-from src.persistedstate import PersistedState
+from persistedstate import PersistedState
 
 NUM_OF_THREADS = 100
 STEPS_OF_EACH_THREAD = 10

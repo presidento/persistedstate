@@ -12,8 +12,8 @@ just bootstrap
 just test
 
 # Run a single test file or test class
-just py -m pytest test_persistedstate.py
-just py -m pytest test_mappedyaml.py::TestNestedDict
+just py -m pytest tests/test_persistedstate.py
+just py -m pytest tests/test_mappedyaml.py::TestNestedDict
 
 # Run tests across all supported Python versions (3.10–3.14)
 just test-all
@@ -33,7 +33,14 @@ just build
 
 ## Architecture
 
-The entire library lives in a single module: `src/persistedstate/__init__.py`.
+The library uses a `src` layout and lives under `src/persistedstate/`.
+
+**Module layout:**
+
+- `__init__.py` — public API re-exports
+- `core.py` — `MappedYaml` and `PersistedState`
+- `file_handler.py` — write-ahead log loading, journaling, and vacuuming
+- `types.py` — YAML-backed mapping/list proxy types and conversion helpers
 
 **Class hierarchy:**
 
@@ -52,6 +59,7 @@ The entire library lives in a single module: `src/persistedstate/__init__.py`.
 
 - **No docstrings by convention** — pylint's `missing-docstring` is globally disabled.
 - **Private attributes use name-mangling** (`self.__cache`, `self.__file_handler`) — accessed from outside via explicit mangled names (e.g., `obj._YamlDict__cache`) in `CustomJsonEncoder` and YAML representers.
-- **Tests live in the project root** as `test_*.py` files and use `tmp/` for state file artifacts.
+- **Tests live in `tests/`** as `test_*.py` files and use `tmp/` for state file artifacts.
+- **Examples live in `examples/`; benchmarks/manual diagnostics live in `benchmarks/`.**
 - **Version scheme:** `YY.N` (two-digit year, dot, counter) — see CHANGELOG.md.
 - **Python 3.10+** required; the package is typed (`py.typed` marker present).

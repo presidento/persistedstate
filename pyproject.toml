@@ -56,3 +56,27 @@ env_list = ["py314", "py313", "py312", "py311", "py310"]
 
 [tool.tox.env_run_base]
 commands = [["pytest"]]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.mypy]
+ignore_missing_imports = true
+no_site_packages = true
+
+[[tool.mypy.overrides]]
+module = "persistedstate"
+disable_error_code = ["override", "attr-defined"]
+
+[tool.pylint.main]
+disable = [
+    "attribute-defined-outside-init",
+    "consider-using-with",
+    "format",
+    "invalid-name",
+    "logging-fstring-interpolation",
+    "logging-not-lazy",
+    "missing-docstring",
+    "no-member",
+    "protected-access",
+]
