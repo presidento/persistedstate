@@ -2,30 +2,33 @@
 
 ## Build & Test
 
-This project uses **uv** as the package manager and **just** (with nushell) as the task runner.
+This project uses **uv** as the package manager and **just** (with nushell) as the task runner. Prefer the recipes in `justfile` for bootstrapping, building, testing, linting, formatting, and release tasks instead of calling the underlying `uv` commands directly.
 
 ```bash
-# Install dependencies
-uv sync --all-groups
+# Bootstrap dependencies and all supported Python versions
+just bootstrap
 
 # Run tests (default Python)
-uv run python -m pytest
+just test
 
 # Run a single test file or test class
-uv run python -m pytest test_persistedstate.py
-uv run python -m pytest test_mappedyaml.py::TestNestedDict
+just py -m pytest test_persistedstate.py
+just py -m pytest test_mappedyaml.py::TestNestedDict
 
 # Run tests across all supported Python versions (3.10–3.14)
-uv run tox run
+just test-all
 
-# Lint
-uv run python -m pylint src *.py
+# Lint with Pylint
+just pylint
 
 # Format check
-uv run python -m black --check src *.py
+just black
 
 # All checks (format + mypy + pylint + tox)
 just check
+
+# Build the project distribution
+just build
 ```
 
 ## Architecture
