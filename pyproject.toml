@@ -1,6 +1,6 @@
 [project]
 name = "persistedstate"
-version = "26.1"
+version = "26.2"
 description = "Ultra fast persistent store for small states in mapped YAML file"
 readme = "README.md"
 license = "MIT"
@@ -8,7 +8,6 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "Intended Audience :: System Administrators",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.10",
@@ -16,6 +15,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Topic :: Utilities",
     "Typing :: Typed",
 ]
@@ -48,11 +48,11 @@ Homepage = "https://github.com/presidento/persistedstate"
 Changelog = "https://github.com/presidento/persistedstate/blob/main/CHANGELOG.md"
 
 [build-system]
-requires = ["uv_build>=0.9.10,<0.10.0"]
+requires = ["uv_build>=0.9.10,<0.14.0"]
 build-backend = "uv_build"
 
 [tool.tox]
-env_list = ["py314", "py313", "py312", "py311", "py310"]
+env_list = ["py315", "py314", "py313", "py312", "py311", "py310"]
 
 [tool.tox.env_run_base]
 commands = [["pytest"]]

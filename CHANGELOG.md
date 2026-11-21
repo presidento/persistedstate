@@ -1,3 +1,7 @@
+# 26.2
+
+- Add Python 3.15 support
+
 # 26.1
 
 - Fix stale paths on list insertion and deletion
@@ -15,7 +19,7 @@
 
 # 24.1
 
-- Official Python 3.13 support
+- Add Python 3.13 support
 
 # 23.9
 
